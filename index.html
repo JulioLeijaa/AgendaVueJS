@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Agenda</title>
+</head>
+
+<body>
+    <div id='app' class="row">
+        <div class="form col mt-3">
+            <h1 class="text-center">Formulario de contacto</h1>
+            <form class="col-7 container">
+                <div class="mb-3" style="display: none;">
+                    <input type="text" class="form-control" id="index" name="index" v-model="form.index" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" v-model="form.nombre">
+                </div>
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Telefono</label>
+                    <input type="number" class="form-control" id="telefono" name="telefono" v-model="form.telefono">
+                </div>
+                <button type="button" class="btn btn-outline-primary" v-on:click="agregar" v-if="btn_agregar">Agregar</button>
+                <button type="button" class="btn btn-outline-primary" v-on:click="actualizar" v-if="btn_actualizar">Actualizar</button>
+            </form>
+        </div>
+
+        <div class="list col mt-3">
+            <h1 class="text-center">Contactos</h1>
+            <div class="col-10 container text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Img</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Telefono</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(contacto, index) in contactos" :key="contacto.id">
+                            <th><img src="img/imagen_perfil.png" alt="img perfil" width="60" height="60"></th>
+                            <td>{{ contacto.nombre | nombreMayuscula}}</td>
+                            <td>{{ contacto.telefono }}</td>
+                            <td>
+                                <div class="">
+                                    <button type="button" class="btn btn-outline-warning" @click="editar(index)">Editar</button>
+                                    <button type="button" class="btn btn-outline-danger" @click="eliminar(index)">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                contactos: [{
+                    'nombre': 'julio',
+                    'telefono': '8717889442'
+                }],
+                form: {
+                    nombre: '',
+                    telefono: '',
+                    index: null
+                },
+                btn_agregar: true,
+                btn_actualizar: false
+            },
+            filters: {
+                nombreMayuscula: function(value) {
+                    if (!value) return ''
+                    value = value.toString();
+                    return value.toLowerCase();
+                }
+            },
+            methods: {
+                agregar: function(event) {
+                    if (this.form.nombre && this.form.telefono) {
+                        this.contactos.push({
+                            'nombre': this.form.nombre,
+                            'telefono': this.form.telefono
+                        });
+                        this.limpiarCampos();
+                    } else {
+                        alert('Agrega ambos datos!');
+                    }
+                    event.preventDefault();
+                },
+                editar: function(index) {
+                    this.form.index = index;
+                    this.form.nombre = this.contactos[index].nombre;
+                    this.form.telefono = this.contactos[index].telefono;
+
+                    this.btn_actualizar = true;
+                    this.btn_agregar = false;
+                },
+                actualizar: function(event) {
+                    if (this.form.nombre && this.form.telefono) {
+                        if (this.form.index != null && typeof this.form.index == 'number') {
+                            this.contactos[this.form.index].nombre = this.form.nombre;
+                            this.contactos[this.form.index].telefono = this.form.telefono;
+
+                            this.btn_actualizar = false;
+                            this.btn_agregar = true;
+                            this.limpiarCampos();
+                        }
+                    } else {
+                        alert('Agrega ambos datos!');
+                    }
+                    event.preventDefault();
+                },
+                eliminar: function(index) {
+                    this.contactos.splice(index, 1);
+                },
+                limpiarCampos: function() {
+                    this.form.nombre = '';
+                    this.form.telefono = '';
+                    this.form.index = null;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
